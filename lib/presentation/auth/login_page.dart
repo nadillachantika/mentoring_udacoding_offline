@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mentoring_udacoding_offline/core/extensions/build_context_ext.dart';
+import 'package:mentoring_udacoding_offline/data/datasources/auth_local_datasource.dart';
 import 'package:mentoring_udacoding_offline/presentation/auth/bloc/login_bloc.dart';
 import 'package:mentoring_udacoding_offline/presentation/home/home_page.dart';
 
@@ -53,7 +54,10 @@ class _LoginPageState extends State<LoginPage> {
                 state.maybeWhen(
                   orElse: () {},
                   success: (data) {
-                    
+
+                    // save data auth with shared preferences
+                    AuthLocalDataSource().saveAuthData(data);
+                
                     context.pushReplacement(const HomePage());
                   },
                   error: (message) {
