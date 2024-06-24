@@ -12,38 +12,39 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
-  final AuthLocalDataSource _authLocalDataSource = AuthLocalDataSource();
-
-  @override
-  void initState() {
-    super.initState();
-    _checkAuthData();
-  }
-
-  Future<void> _checkAuthData() async{
-     bool isAuthExist = await _authLocalDataSource.isAuthDataExist();
-    if (isAuthExist) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     Future.delayed(
       const Duration(seconds: 2),
       () => context.pushReplacement(const LoginPage()),
     );
-    return const Scaffold(
-      body: Center(
-        child: Text("Splash Screen"),
+    return Scaffold(
+      body: FutureBuilder(
+        future: AuthLocalDataSource().isAuthDataExist(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasData) {
+            if (snapshot.data! == true) {
+              Future.delayed(
+                const Duration(seconds: 2),
+                () => context.pushReplacement(const HomePage()),
+              );
+            } else {
+              Future.delayed(
+                const Duration(seconds: 2),
+                () => context.pushReplacement(const LoginPage()),
+              );
+            }
+          }
+
+          return const Center(
+            child: Text("Splash Screen"),
+          );
+        },
       ),
     );
   }

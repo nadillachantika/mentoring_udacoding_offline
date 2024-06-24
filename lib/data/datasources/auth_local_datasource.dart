@@ -18,4 +18,10 @@ class AuthLocalDataSource {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey('auth_data');
   }
+
+  // remove preference
+   Future<void> removeAuthData() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.remove('auth_data');
+  }
 }
