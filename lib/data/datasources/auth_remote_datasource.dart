@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:mentoring_udacoding_offline/core/constant/variables.dart';
 import 'package:mentoring_udacoding_offline/data/models/auth_response_models.dart';
 import 'package:http/http.dart' as http;
+import 'package:mentoring_udacoding_offline/data/models/profile_response_models.dart';
 
 class AuthRemoteDatasource{
 
@@ -33,5 +34,7 @@ class AuthRemoteDatasource{
    }
 
   }
+
+ 
 
 }

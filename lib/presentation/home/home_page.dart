@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mentoring_udacoding_offline/core/extensions/build_context_ext.dart';
 import 'package:mentoring_udacoding_offline/data/datasources/auth_local_datasource.dart';
 import 'package:mentoring_udacoding_offline/data/models/auth_response_models.dart';
+import 'package:mentoring_udacoding_offline/data/models/profile_response_models.dart';
 import 'package:mentoring_udacoding_offline/presentation/auth/login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,48 +13,74 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final AuthLocalDataSource _authLocalDataSource =
-      AuthLocalDataSource(); // Instance dari AuthLocalDataSource
-  AuthResponseModel? _authData; // Variabel untuk menyimpan data auth
+  final AuthLocalDataSource _authLocalDataSource = AuthLocalDataSource(); // Instance dari AuthLocalDataSource
+  GetProfileResponseModel? _profileData; // Variabel untuk menyimpan data profil
+  bool _isLoading = false; // Variabel untuk menunjukkan status loading
 
   @override
   void initState() {
     super.initState();
-    _loadUsername();
+    _loadProfile();
   }
 
-  Future<void> _loadUsername() async {
-    AuthResponseModel? authData = await _authLocalDataSource.getAuthData();
+  Future<void> _loadProfile() async {
     setState(() {
-      _authData = authData;
+      _isLoading = true;
     });
+
+    try {
+      AuthResponseModel? authData = await _authLocalDataSource.getAuthData();
+      if (authData?.data?.original?.token != null) {
+        GetProfileResponseModel? profileData = await _authLocalDataSource.getProfileUser(authData!.data!.original!.token!);
+        setState(() {
+          _profileData = profileData;
+        });
+      }
+    } catch (e) {
+      print('Failed to load user profile: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
-    Future<void> _logout() async {
+  Future<void> _refreshData() async {
+    await _loadProfile();
+  }
+
+  Future<void> _logout() async {
     await _authLocalDataSource.removeAuthData();
-    // Navigasi ke halaman login setelah logout
     context.pushReplacement(const LoginPage());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text("Home Page"),
-            const SizedBox(height: 20),
-            Text("Email User: ${_authData?.data!.original!.data!.email}"),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _logout,
-              child: const Text("Logout"),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Home Page"),
+                const SizedBox(height: 20),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text("User name: ${_profileData?.data?.name ?? 'No name'}"),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _logout,
+                  child: const Text("Logout"),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

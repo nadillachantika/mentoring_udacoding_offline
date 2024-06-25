@@ -57,7 +57,6 @@ class _LoginPageState extends State<LoginPage> {
 
                     // save data auth with shared preferences
                     AuthLocalDataSource().saveAuthData(data);
-                
                     context.pushReplacement(const HomePage());
                   },
                   error: (message) {
