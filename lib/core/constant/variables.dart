@@ -1,3 +1,3 @@
 class Variables{
-  static const String baseUrl = "https://app-reporting.udadeveloper.com/api";
+  static const String baseUrl = "http://192.168.1.5:8000/api";
 }

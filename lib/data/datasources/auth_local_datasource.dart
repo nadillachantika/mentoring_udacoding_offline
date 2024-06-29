@@ -33,7 +33,7 @@ class AuthLocalDataSource {
 
    Future<GetProfileResponseModel?> getProfileUser(String token) async {
     final response = await http.get(
-      Uri.parse('${Variables.baseUrl}/profile'),
+      Uri.parse('${Variables.baseUrl}/get-profile-user'),
       headers: {
         'Authorization': 'Bearer $token',
       },

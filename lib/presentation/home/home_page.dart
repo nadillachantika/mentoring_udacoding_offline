@@ -4,6 +4,7 @@ import 'package:mentoring_udacoding_offline/data/datasources/auth_local_datasour
 import 'package:mentoring_udacoding_offline/data/models/auth_response_models.dart';
 import 'package:mentoring_udacoding_offline/data/models/profile_response_models.dart';
 import 'package:mentoring_udacoding_offline/presentation/auth/login_page.dart';
+import 'package:mentoring_udacoding_offline/presentation/profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,8 +31,8 @@ class _HomePageState extends State<HomePage> {
 
     try {
       AuthResponseModel? authData = await _authLocalDataSource.getAuthData();
-      if (authData?.data?.original?.token != null) {
-        GetProfileResponseModel? profileData = await _authLocalDataSource.getProfileUser(authData!.data!.original!.token!);
+      if (authData?.token != null) {
+        GetProfileResponseModel? profileData = await _authLocalDataSource.getProfileUser(authData!.token!);
         setState(() {
           _profileData = profileData;
         });
@@ -72,8 +73,14 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _isLoading
                     ? const CircularProgressIndicator()
-                    : Text("User name: ${_profileData?.data?.name ?? 'No name'}"),
+                    : Text("User name: ${_profileData?.user?.name ?? 'No name'}"),
                 const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    context.push( ProfilePage());
+                  },
+                  child: const Text("Profile Page"),
+                ),
                 ElevatedButton(
                   onPressed: _logout,
                   child: const Text("Logout"),

@@ -11,7 +11,7 @@ class AuthRemoteDatasource{
 
   Future<Either<String, AuthResponseModel>> login( String email, String password)async{
 
-    final url = Uri.parse('${Variables.baseUrl}/auth/login');
+    final url = Uri.parse('${Variables.baseUrl}/login');
     
     final response = await http.post(
       url,
